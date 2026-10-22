@@ -8,6 +8,7 @@ import copy
 import math
 from typing import Dict, Any, List, Optional
 
+from cli_anything.inkscape.utils.project_ids import _IDElement
 from cli_anything.inkscape.utils.svg_utils import generate_id, serialize_style
 
 # ── Shape Registry ──────────────────────────────────────────────
@@ -92,7 +93,7 @@ def add_rect(
         raise ValueError(f"Rectangle dimensions must be positive: {width}x{height}")
 
     obj_id = generate_id("rect", project)
-    obj = {
+    obj = _IDElement({
         "id": obj_id,
         "name": name or obj_id,
         "type": "rect",
@@ -102,7 +103,7 @@ def add_rect(
         "style": style or DEFAULT_STYLE,
         "transform": "",
         "layer": layer or _default_layer_id(project),
-    }
+    })
     _add_object(project, obj)
     return obj
 
@@ -119,7 +120,7 @@ def add_circle(
         raise ValueError(f"Circle radius must be positive: {r}")
 
     obj_id = generate_id("circle", project)
-    obj = {
+    obj = _IDElement({
         "id": obj_id,
         "name": name or obj_id,
         "type": "circle",
@@ -127,7 +128,7 @@ def add_circle(
         "style": style or DEFAULT_STYLE,
         "transform": "",
         "layer": layer or _default_layer_id(project),
-    }
+    })
     _add_object(project, obj)
     return obj
 
@@ -145,7 +146,7 @@ def add_ellipse(
         raise ValueError(f"Ellipse radii must be positive: rx={rx}, ry={ry}")
 
     obj_id = generate_id("ellipse", project)
-    obj = {
+    obj = _IDElement({
         "id": obj_id,
         "name": name or obj_id,
         "type": "ellipse",
@@ -153,7 +154,7 @@ def add_ellipse(
         "style": style or DEFAULT_STYLE,
         "transform": "",
         "layer": layer or _default_layer_id(project),
-    }
+    })
     _add_object(project, obj)
     return obj
 
@@ -169,7 +170,7 @@ def add_line(
     """Add a line to the document."""
     obj_id = generate_id("line", project)
     line_style = style or "fill:none;stroke:#000000;stroke-width:2"
-    obj = {
+    obj = _IDElement({
         "id": obj_id,
         "name": name or obj_id,
         "type": "line",
@@ -177,7 +178,7 @@ def add_line(
         "style": line_style,
         "transform": "",
         "layer": layer or _default_layer_id(project),
-    }
+    })
     _add_object(project, obj)
     return obj
 
@@ -198,7 +199,7 @@ def add_polygon(
         raise ValueError("Polygon must have at least one point")
 
     obj_id = generate_id("polygon", project)
-    obj = {
+    obj = _IDElement({
         "id": obj_id,
         "name": name or obj_id,
         "type": "polygon",
@@ -206,7 +207,7 @@ def add_polygon(
         "style": style or DEFAULT_STYLE,
         "transform": "",
         "layer": layer or _default_layer_id(project),
-    }
+    })
     _add_object(project, obj)
     return obj
 
@@ -227,7 +228,7 @@ def add_path(
         raise ValueError("Path data (d) cannot be empty")
 
     obj_id = generate_id("path", project)
-    obj = {
+    obj = _IDElement({
         "id": obj_id,
         "name": name or obj_id,
         "type": "path",
@@ -235,7 +236,7 @@ def add_path(
         "style": style or DEFAULT_STYLE,
         "transform": "",
         "layer": layer or _default_layer_id(project),
-    }
+    })
     _add_object(project, obj)
     return obj
 
@@ -259,7 +260,7 @@ def add_star(
     d = _star_path(cx, cy, points_count, outer_r, inner_r)
 
     obj_id = generate_id("star", project)
-    obj = {
+    obj = _IDElement({
         "id": obj_id,
         "name": name or obj_id,
         "type": "star",
@@ -271,7 +272,7 @@ def add_star(
         "style": style or DEFAULT_STYLE,
         "transform": "",
         "layer": layer or _default_layer_id(project),
-    }
+    })
     _add_object(project, obj)
     return obj
 
@@ -302,7 +303,7 @@ def duplicate_object(project: Dict[str, Any], index: int) -> Dict[str, Any]:
         raise IndexError(f"Object index {index} out of range (0-{len(objects)-1})")
 
     original = objects[index]
-    dup = copy.deepcopy(original)
+    dup = _IDElement(copy.deepcopy(original))
     new_id = generate_id(dup.get("type", "obj"), project)
     dup["id"] = new_id
     dup["name"] = f"{original.get('name', 'object')}_copy"
